@@ -20,7 +20,7 @@ if __name__ == "__main__":
     # Read all images
     im_list = []
     for i in range(1, 9):
-        im_file = "{}.jpg".format(i)
+        im_file = "imgs/{}.jpg".format(i)
         im = cv2.imread(im_file)
         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         im_list.append(im)
@@ -29,10 +29,14 @@ if __name__ == "__main__":
     rot_list.append(np.eye(3))
     for i in range(len(im_list) - 1):
         # Load consecutive images I_i and I_{i+1}
-        # TODO Your code goes here
+        I_prev, I_current = im_list[i], im_list[i + 1]
 
         # Extract SIFT features
-        # TODO Your code goes here
+        sift = cv2.SIFT_create()
+        kp1, des1 = sift.detectAndCompute(I_prev, None)
+        kp2, des2 = sift.detectAndCompute(I_current, None)
+        loc1 = np.asarray([[p.pt[0], p.pt[1]] for p in kp1])
+        loc2 = np.asarray([[p.pt[0], p.pt[1]] for p in kp2])
 
         # Find the matches between two images (x1 <--> x2)
         x1, x2 = MatchSIFT(loc1, des1, loc2, des2)
@@ -44,7 +48,7 @@ if __name__ == "__main__":
         R = EstimateR(H, K)
 
         # Compute R_new (or R_i+1)
-        # TODO Your code goes here
+        R_new = R @ rot_list[i]
 
         rot_list.append(R_new)
 
